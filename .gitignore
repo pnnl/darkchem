@@ -1,4 +1,5 @@
 # user
+data/
 *.sbatch
 result/
 .DS_Store
