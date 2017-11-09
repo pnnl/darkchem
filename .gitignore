@@ -3,6 +3,7 @@ data/
 *.sbatch
 result/
 .DS_Store
+slurm-*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
