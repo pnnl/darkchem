@@ -1,0 +1,11 @@
+openbabel
+keras
+tensorflow
+rdkit
+openbabel
+numpy
+scipy
+scikit-learn
+matplotlib
+seaborn
+pandas
