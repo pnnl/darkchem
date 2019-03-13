@@ -6,7 +6,7 @@ Overview
 DarkChem employs a variational autoencoder (VAE) to learn a continuous numerical, or latent, representation of molecular structure, to simultaneously characterize and expand reference libraries for small molecule identification.  DarkChem includes a chemical property decoder, trained as a multitask network, in order to shape the latent representation such that it assembles according to desired chemical properties.  The approach is unique in its application to metabolomics and small molecule identification and in its focus on properties that can be obtained from experimental instruments (mass, CCS). Once trained, the network can be used to predict chemical properties directly from structure, as well as generate candidate structures with chemical properties similar to some arbitrary input. 
 
 <p align="center">
-  <img align="center" src="resources/overview.png" width="40%" height="40%">
+  <img align="center" src="resources/overview.png" width="75%" height="75%">
 </p>
 
 Installation
