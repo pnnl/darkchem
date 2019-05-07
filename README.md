@@ -33,7 +33,28 @@ pip install git+https://github.com/pnnl/darkchem
 
 Getting Started
 ---------------
-Under construction.
+The easiest way to get started with DarkChem is to use the supplied CLI entry points. Data can be preprocessed with ``darkchem-prep``, resulting files can be used to train with ``darkchem-train``, and evaluation/prediction with new data can be performed with ``darkchem-evaluate``. The ``--help`` or ``-h`` flag can be used with each of these commands for additional information.
+
+More advanced functionality requires the use of DarkChem as an API. For example, in order to load pre-trained weights and predict the latent represenation of a set of structures:
+```
+import numpy as np
+import darkchem            
+ 
+# load model
+model = darkchem.utils.load_model(‘/path/to/model_folder/’) # arguments.txt must be present in this folder, as well as respective network weights
+ 
+# load data
+x = np.load(‘/path/to/smiles.npy’)
+ 
+# generate latent space
+x_latent = model.encoder.predict(x)
+ 
+# generate property predictions
+y_pred = model.predictor.predict(x_latent)
+ 
+# predict SMILES outputs
+x_pred = model.decoder.predict(x_latent)
+```
 
 Disclaimer
 ----------
