@@ -5,6 +5,7 @@ data/
 result/
 .DS_Store
 slurm-*
+*.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
