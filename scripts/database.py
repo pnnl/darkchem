@@ -4,6 +4,7 @@ import numpy as np
 import scipy.spatial
 import sklearn.decomposition
 import pandas as pd
+import glob
 
 
 def network(path):
@@ -14,63 +15,67 @@ def network(path):
 
 
 if __name__ == '__main__':
-    infile = '/Users/colb804/Desktop/toxcast_present_canonsmi.txt'
-    output = '/Users/colb804/Desktop/toxcast_darkchem.tsv'
 
-    # # load new data
-    print('Preprocessing input data...')
-    data = pd.read_csv(infile, sep='\t', header=None, names=['SMILES'])
+    infiles = glob.glob('../data/pubchem/pubchem_*_smiles.tsv')
+    infiles.sort()
 
-    can = data['SMILES'].values
-    vec = darkchem.preprocess.vectorize(can)
+    for i, infile in enumerate(infiles):
+        output = '..result/pubchem_darkchem_%03d.tsv' % i
 
-    template = pd.DataFrame({'SMILES': can, 'vec': vec})
+        # # load new data
+        print('Preprocessing input data for chunk %03d...' % (i + 1))
+        data = pd.read_csv(infile, sep='\t', header=None, names=['SMILES'])
 
-    template.dropna(how='any', inplace=True)
-    vec = np.vstack(template['vec'].values)
-    template = template[['SMILES']]
+        can = darkchem.preprocess.inchi2smi(data['SMILES'].values)
+        vec = darkchem.preprocess.vectorize(can)
 
-    # create data frame
-    dfs = []
+        template = pd.DataFrame({'SMILES': can, 'vec': vec})
 
-    # enumerate adduct types
-    for adduct in ['[M+H]', '[M-H]', '[M+Na]']:
-        print('Running DarkChem for %s...' % adduct)
-        df = template.copy()
-        df['Adduct'] = adduct
+        template.dropna(how='any', inplace=True)
+        vec = np.vstack(template['vec'].values)
+        template = template[['InChI', 'SMILES']]
 
-        # load train, network
-        print('\tPredicting...')
-        train = np.load('../data/valset_%s_smiles.npy' % adduct)
-        net = network('../result/N7b_%s' % adduct)
+        # create data frame
+        dfs = []
 
-        # predict latent
-        train_latent = net.encoder.predict(train)
-        test_latent = net.encoder.predict(vec)
+        # enumerate adduct types
+        for adduct in ['[M+H]', '[M-H]', '[M+Na]']:
+            print('Running DarkChem for %s...' % adduct)
+            df = template.copy()
+            df['Adduct'] = adduct
 
-        # predict ccs
-        ccs = net.predictor.predict(test_latent)[:, -1]
-        df['CCS'] = ccs
+            # load train, network
+            print('\tPredicting...')
+            train = np.load('../data/valset_%s_smiles.npy' % adduct)
+            net = network('../result/N7b_%s' % adduct)
 
-        # pca
-        print('\tCalculating PCA transform...')
-        p = sklearn.decomposition.PCA(n_components=8)
-        train_latent_pca = p.fit_transform(train_latent)
-        test_latent_pca = p.transform(test_latent)
+            # predict latent
+            train_latent = net.encoder.predict(train)
+            test_latent = net.encoder.predict(vec)
 
-        # convex hull
-        print('\tConstructing convex hull...')
-        chull = scipy.spatial.ConvexHull(train_latent_pca)
-        print('\tConverting to Delaunay...')
-        d = scipy.spatial.Delaunay(train_latent_pca[chull.vertices])
+            # predict ccs
+            ccs = net.predictor.predict(test_latent)[:, -1]
+            df['CCS'] = ccs
 
-        # membership
-        print('\tDetermining hull membership...')
-        df['Hull'] = d.find_simplex(test_latent_pca) >= 0
+            # pca
+            print('\tCalculating PCA transform...')
+            p = sklearn.decomposition.PCA(n_components=8)
+            train_latent_pca = p.fit_transform(train_latent)
+            test_latent_pca = p.transform(test_latent)
 
-        # add to list
-        dfs.append(df)
+            # convex hull
+            print('\tConstructing convex hull...')
+            chull = scipy.spatial.ConvexHull(train_latent_pca)
+            print('\tConverting to Delaunay...')
+            d = scipy.spatial.Delaunay(train_latent_pca[chull.vertices])
 
-    # save
-    final = pd.concat(dfs)
-    final.to_csv(output, sep='\t', index=False)
+            # membership
+            print('\tDetermining hull membership...')
+            df['Hull'] = d.find_simplex(test_latent_pca) >= 0
+
+            # add to list
+            dfs.append(df)
+
+        # save
+        final = pd.concat(dfs)
+        final.to_csv(output, sep='\t', index=False)
