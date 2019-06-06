@@ -145,11 +145,11 @@ class VAE(object):
 
     def _build_encoder(self, x):
         # build filters
-        for i, (k, f) in enumerate(zip(self.kernels, self.filters)):
+        for i, (f, k) in enumerate(zip(self.filters, self.kernels)):
             if i < 1:
-                h = Conv1D(k, f, activation='relu', padding='same')(x)
+                h = Conv1D(f, k, activation='relu', padding='same')(x)
             else:
-                h = Conv1D(k, f, activation='relu', padding='same')(h)
+                h = Conv1D(f, k, activation='relu', padding='same')(h)
         h = Flatten()(h)
 
         # latent space sampling
@@ -177,7 +177,7 @@ class VAE(object):
             # lr, lr0 = self._get_learning_rate()
             # kl_loss *= (lr / lr0)
 
-            return xent_loss + kl_loss # + mu_loss + var_loss
+            return xent_loss + kl_loss  # + mu_loss + var_loss
 
         # add noise
         z_mean_variational = Lambda(sampling, output_shape=(self.latent_dim,))([z_mean, z_log_var])
@@ -189,8 +189,8 @@ class VAE(object):
         h = Reshape((self.latent_dim, 1))(encoded)
 
         # build filters
-        for k, f in zip(self.kernels, self.filters):
-            h = Conv1D(k, f, activation='relu', padding='same')(h)
+        for f, k in zip(self.filters, self.kernels):
+            h = Conv1D(f, k, activation='relu', padding='same')(h)
 
         # prepare output dim
         h = Flatten()(h)
