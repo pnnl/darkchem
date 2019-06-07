@@ -95,11 +95,13 @@ def main():
             smiles = df['SMILES'].values
         # convert inchi to canonical smiles
         elif 'InChI' in df.columns and 'SMILES' not in df.columns:
+            print('converting inchi to smiles...')
             df['SMILES'] = darkchem.utils.inchi2smi(df['InChI'].values)
             smiles = df['SMILES'].values
         # canonicalize existing smiles
         elif 'SMILES' in df.columns:
-            df['SMILES_canonical'] = darkchem.utils.canonicalize(df['SMILES'].values)
+            print('canonicalizing smiles...')
+            df['SMILES_canonical'] = darkchem.preprocess.canonicalize(df['SMILES'].values)
             smiles = df['SMILES_canonical'].values
         # error
         else:
@@ -107,6 +109,7 @@ def main():
 
         # property prediction
         if args.mode == 'prop':
+            print('predicting properties...')
             properties = darkchem.predict.properties(smiles, args.network)
             for i in range(len(properties.shape[-1])):
                 df['prop%03d' % i] = properties[:, i]
@@ -114,6 +117,7 @@ def main():
 
         # latent prediction
         elif args.mode == 'latent':
+            print('predicting latent representation...')
             latent = darkchem.predict.latent(smiles, args.network)
             np.save('%s_latent.npy' % name, latent)
 
