@@ -33,7 +33,7 @@ pip install git+https://github.com/pnnl/darkchem
 
 Getting Started
 ---------------
-The easiest way to get started with DarkChem is to use the supplied CLI entry points. Data can be preprocessed with ``darkchem-prep``, resulting files can be used to train with ``darkchem-train``, and evaluation/prediction with new data can be performed with ``darkchem-evaluate``. The ``--help`` or ``-h`` flag can be used with each of these commands for additional information.
+The easiest way to get started with DarkChem is to use the supplied CLI entry points. Data can be preprocessed with ``darkchem prep``, resulting files can be used to train with ``darkchem train``, and prediction with new data using a trained network can be performed with ``darkchem predict``. The ``--help`` or ``-h`` flag can be used with each of these commands for additional information.
 
 More advanced functionality requires the use of DarkChem as an API. For example, in order to load pre-trained weights and predict the latent represenation of a set of structures:
 
