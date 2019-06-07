@@ -80,6 +80,52 @@ def parse_formulas(formulas, processes=mp.cpu_count()):
     return pd.DataFrame(data=p.map(_parse_formula, formulas))
 
 
+def process(df, name, output, canonical=False, shuffle=True):
+    '''
+    Assumes dataframe with InChI or SMILES columns and
+    optionally a Formula column.  Any additional columns will
+    be propagated as labels for prediction.
+    '''
+
+    # shuffle data
+    if shuffle:
+        df = df.sample(frac=1).reset_index(drop=True)
+
+    # already converted
+    if 'SMILES' in df.columns and canonical is True:
+        pass
+    # convert inchi to canonical smiles
+    elif 'InChI' in df.columns and 'SMILES' not in df.columns:
+        df['SMILES'] = inchi2smi(df['InChI'].values)
+        df.to_csv(os.path.join(output, '%s_smiles.tsv' % name), index=False, sep='\t')
+    # canonicalize existing smiles
+    elif 'SMILES' in df.columns:
+        df['SMILES'] = canonicalize(df['SMIlES'].values)
+        df.to_csv(os.path.join(output, '%s_canonical.tsv' % name), index=False, sep='\t')
+    # error
+    else:
+        raise ValueError('Dataframe must have an "InChI" or "SMILES" column.')
+
+    # vectorize
+    # TODO: configurable max length
+    # TODO: configurable charsest
+    df['vec'] = vectorize(df['SMILES'].values)
+    df.dropna(how='any', axis=0, inplace=True)
+    arr = np.vstack(df['vec'].values)
+
+    # labels
+    if 'InChI' in df.columns:
+        labels = df.drop(columns=['InChI', 'SMILES', 'vec'])
+    else:
+        labels = df.drop(columns=['SMILES', 'vec'])
+
+    # save
+    np.save(os.path.join(output, '%s.npy' % name), arr)
+
+    if len(labels.columns) > 0:
+        np.save(os.path.join(output, '%s_labels.npy' % name), labels.values)
+
+
 class SDF:
     def __init__(self):
         pass

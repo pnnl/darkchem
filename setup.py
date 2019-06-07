@@ -26,8 +26,6 @@ setup(
     packages=pkgs,
     install_requires=required,
     entry_points={
-        'console_scripts': ['darkchem-train = darkchem.cli.train:main',
-                            'darkchem-evaluate = darkchem.cli.evaluate:main',
-                            'darkchem-prep = darkchem.cli.preprocess:main']
+        'console_scripts': ['darkchem = darkchem.cli:main']
     }
 )
