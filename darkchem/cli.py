@@ -32,7 +32,7 @@ def main():
     p['train'].add_argument('output', type=str, help='path to output folder (str).')
     p['train'].add_argument('-y', '--labels', type=str, default='-1', help='path to input labels (str, optional)')
 
-    network = p['train'].add_argument_group('Network configuration')
+    network = p['train'].add_argument_group('network configuration')
     network.add_argument('-k', '--kernels', nargs='+', type=int, default=[9, 9, 10], help='kernel size per convolution (int, default=9 9 10)')
     network.add_argument('-f', '--filters', nargs='+', type=int, default=[10, 10, 11], help='number of filters per convolution (int, default=10 10 11)')
     network.add_argument('-ed', '--embedding-dim', type=int, default=32, help='input vector embedding dimension (int, default=32)')
@@ -40,7 +40,7 @@ def main():
     network.add_argument('-e', '--epsilon', type=float, default=0.1, help='latent space standard deviation (float, default=0.1)')
     network.add_argument('-d', '--dropout', type=float, default=0.2, help='dropout fraction on property prediciton (float, default=0.2)')
 
-    training = p['train'].add_argument_group('Training configuration')
+    training = p['train'].add_argument_group('training configuration')
     training.add_argument('-w', '--weights', type=str, default='-1', help='path to directory containing pretrained weights (str, optional).')
     training.add_argument('-z', '--freeze-vae', action='store_true', help='freeze autoencoder weights (optional)')
     training.add_argument('-v', '--validation', type=float, default=0.1, help='fraction to withold for validation (float, default=0.1)')
