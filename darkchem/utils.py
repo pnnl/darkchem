@@ -153,7 +153,7 @@ def struct2vec(struct, charset=SMI, max_length=100):
     output = _smi2vec(struct, charset, max_length)
 
     if output is None:
-        return np.full(max_length, np.nan)
+        return np.zeros(max_length)
     else:
         return np.array(output, dtype=np.uint8)
 
