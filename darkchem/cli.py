@@ -111,8 +111,8 @@ def main():
         if args.mode == 'prop':
             print('predicting properties...')
             properties = darkchem.predict.properties(smiles, args.network)
-            for i in range(len(properties.shape[-1])):
-                df['prop%03d' % i] = properties[:, i]
+            for i in range(properties.shape[-1]):
+                df['prop_%03d' % i] = properties[:, i]
             df.to_csv('%s_darkchem.tsv' % name, sep='\t', index=False)
 
         # latent prediction
