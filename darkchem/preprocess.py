@@ -100,7 +100,7 @@ def process(df, name, output, canonical=False, shuffle=True):
         df.to_csv(os.path.join(output, '%s_smiles.tsv' % name), index=False, sep='\t')
     # canonicalize existing smiles
     elif 'SMILES' in df.columns:
-        df['SMILES'] = canonicalize(df['InChI'].values)
+        df['SMILES'] = canonicalize(df['SMIlES'].values)
         df.to_csv(os.path.join(output, '%s_canonical.tsv' % name), index=False, sep='\t')
     # error
     else:
