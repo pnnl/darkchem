@@ -1,0 +1,15 @@
+kernels: [9, 9, 10]
+filters: [10, 10, 11]
+embedding_dim: 32
+latent_dim: 128
+epsilon: 0.8
+dropout: 0.2
+freeze_vae: True
+validation: 0.1
+batch_size: 128
+epochs: 10000
+patience: 5000
+seed: 777
+nlabels: 2
+max_length: 100
+nchars: 38
