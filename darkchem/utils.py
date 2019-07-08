@@ -5,6 +5,7 @@ from rdkit import Chem
 import multiprocessing as mp
 from functools import partial
 from os.path import *
+import keras
 
 # Globals
 SMI = ['PAD',
@@ -304,3 +305,53 @@ def downselect(data, p=0.95):
 
     # filter by percentile
     return idx[:int(p * idx.shape[0])]
+
+
+def evaluate(data, network, labels='-1', validation=-1, seed=777):
+    result = {}
+    model = load_model(network)
+
+    x = np.load(data)
+
+    # validation subset
+    if validation is not None:
+        # set seed
+        np.random.seed(seed)
+
+        # split
+        mask = test_train_split(x, validation)
+
+        # grab validation
+        x = x[~mask]
+
+    # one hot
+    n, m = x.shape
+    d = max(np.unique(x)) + 1
+    one_hot = keras.utils.to_categorical(x, d).reshape((-1, m, d))
+
+    # predict
+    latent = model.encoder.predict(x)
+    decoded = model.decoder.predict(latent)
+
+    # reconstruction accuracy
+    result['reconstruction accuracy'] = [100 * np.mean(np.equal(np.argmax(one_hot, axis=-1),
+                                                                np.argmax(decoded, axis=-1)))]
+
+    # property prediction
+    if labels is not None:
+        y = np.load(labels)
+
+        # validation subset
+        if validation != -1:
+            y = y[~mask]
+
+        # predict
+        y_hat = model.predictor.predict(latent)
+
+        # property prediction error
+        result['property predicton error'] = 100 * np.mean(np.abs(y - y_hat) / y, axis=0)
+
+    # display results
+    for k, v in result.items():
+        v = '\t'.join(['%.3f%%' % x for x in v])
+        print('%s:\t%s' % (k, v))

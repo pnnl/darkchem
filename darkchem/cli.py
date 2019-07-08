@@ -58,6 +58,17 @@ def main():
     p['predict'].add_argument('network', type=str, help='path to saved network weights (str)')
     p['predict'].add_argument('-c', '--canonical', action='store_true', help='indicate smiles column already canonicalized with openbabel')
 
+    # evaluation mode
+    p['eval'] = p['subparsers'].add_parser('evaluate',
+                                           description='DarkChem network evaluation module',
+                                           help='evaluation module')
+    p['eval'].add_argument('data', type=str, help='path to input data containing vectorized smiles (str)')
+    p['eval'].add_argument('network', type=str, help='path to saved network weights (str)')
+    p['eval'].add_argument('-y', '--labels', type=str, default='-1', help='path to input labels (str, optional)')
+    p['eval'].add_argument('-v', '--validation', type=float, default=-1, help='fraction witheld during training (float, optional)')
+    p['eval'].add_argument('-s', '--seed', type=int, default=777, help='random seed used during training (int, default=777).')
+
+
     args = p['global'].parse_args()
 
     # input processing
@@ -120,6 +131,15 @@ def main():
             print('predicting latent representation...')
             latent = darkchem.predict.latent(smiles, args.network)
             np.save('%s_latent.npy' % name, latent)
+
+    elif args.which == 'evaluate':
+        if args.validation == -1:
+            args.validation = None
+        if args.labels == '-1':
+            args.labels = None
+
+        darkchem.utils.evaluate(args.data, args.network,
+                                labels=args.labels, validation=args.validation, seed=args.seed)
 
     # no module selected
     else:
