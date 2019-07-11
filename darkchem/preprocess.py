@@ -14,7 +14,7 @@ def vectorize(smiles, processes=mp.cpu_count()):
 
 
 def _canonicalize(smi):
-    '''Converts InChI string to SMILES string.'''
+    '''Canonicalizes SMILES string.'''
 
     try:
         res = subprocess.check_output('echo "%s" | obabel -ismi -ocan' % smi,
@@ -100,11 +100,11 @@ def process(df, name, output, canonical=False, shuffle=True):
         df.to_csv(os.path.join(output, '%s_smiles.tsv' % name), index=False, sep='\t')
     # canonicalize existing smiles
     elif 'SMILES' in df.columns:
-        df['SMILES'] = canonicalize(df['SMIlES'].values)
+        df['SMILES'] = canonicalize(df['SMILES'].values)
         df.to_csv(os.path.join(output, '%s_canonical.tsv' % name), index=False, sep='\t')
     # error
     else:
-        raise ValueError('Dataframe must have an "InChI" or "SMILES" column.')
+        raise KeyError('Dataframe must have an "InChI" or "SMILES" column.')
 
     # vectorize
     # TODO: configurable max length
