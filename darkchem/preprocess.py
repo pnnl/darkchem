@@ -10,7 +10,7 @@ import numpy as np
 
 def vectorize(smiles, processes=mp.cpu_count()):
     p = mp.Pool(processes=processes)
-    return np.vstack(p.map(darkchem.utils.struct2vec, smiles))
+    return p.map(darkchem.utils.struct2vec, smiles)
 
 
 def _canonicalize(smi):
