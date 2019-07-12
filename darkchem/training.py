@@ -10,7 +10,7 @@ def train(args):
     from darkchem.callbacks import MultiModelCheckpoint
 
     # load data
-    x = np.load(args.data)
+    x = np.load(args.data).astype(np.uint8)
     n, m = x.shape
     d = max(np.unique(x)) + 1
 
