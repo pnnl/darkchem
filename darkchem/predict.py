@@ -1,10 +1,11 @@
 import darkchem
 from os.path import *
+import numpy as np
 
 
 def latent(smiles, network):
     # convert smiles
-    vectors = darkchem.preprocess.vectorize(smiles)
+    vectors = np.vstack(darkchem.preprocess.vectorize(smiles))
 
     # load model
     config = darkchem.utils.load_config(join(network, 'arguments.txt'))
@@ -19,7 +20,7 @@ def latent(smiles, network):
 
 def properties(smiles, network):
     # convert smiles
-    vectors = darkchem.preprocess.vectorize(smiles)
+    vectors = np.vstack(darkchem.preprocess.vectorize(smiles))
 
     # load model
     config = darkchem.utils.load_config(join(network, 'arguments.txt'))
