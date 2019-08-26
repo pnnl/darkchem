@@ -15,6 +15,9 @@ def latent(smiles, network):
     # predict latent
     latent = model.encoder.predict(vectors)
 
+    # overwrite invalids
+    latent = np.where(np.all(vectors == 0, axis=1, keepdims=True), np.nan, latent)
+
     return latent
 
 
@@ -32,5 +35,8 @@ def properties(smiles, network):
 
     # properties
     properties = model.predictor.predict(latent)
+
+    # overwrite invalids
+    properties = np.where(np.all(vectors == 0, axis=1, keepdims=True), np.nan, properties)
 
     return properties
