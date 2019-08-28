@@ -1,4 +1,22 @@
 from keras.callbacks import *
+import pandas as pd
+
+
+class LossHistory(Callback):
+    def __init__(self, path):
+        self.path = path
+
+    def on_train_begin(self, logs={}):
+        self.losses = []
+
+    def on_batch_end(self, batch, logs={}):
+        self.losses.append(logs)
+
+    def on_epoch_end(self, epoch, logs=None):
+        self.save()
+
+    def save(self):
+        pd.DataFrame(self.losses).to_csv(self.path, index=False, sep='\t')
 
 
 class MultiModelCheckpoint(Callback):

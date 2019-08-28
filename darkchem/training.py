@@ -7,7 +7,7 @@ import os
 def train(args):
     import keras
     from darkchem.network import VAE
-    from darkchem.callbacks import MultiModelCheckpoint
+    from darkchem.callbacks import MultiModelCheckpoint, LossHistory
 
     # load data
     x = np.load(args.data).astype(np.uint8)
@@ -89,13 +89,16 @@ def train(args):
     # early stopping
     early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=args.patience, mode='min')
 
+    # history
+    history = LossHistory(os.path.join(args.output, 'loss_history.tsv'))
+
     # train multitask
     if args.labels != '-1':
         model.autoencoder.fit(x_train, [y_train, labels_train],
                               batch_size=args.batch_size,
                               epochs=args.epochs,
                               validation_data=(x_validation, [y_validation, labels_validation]),
-                              callbacks=[early_stop, checkpoint],
+                              callbacks=[early_stop, checkpoint, history],
                               shuffle=True,
                               verbose=2)
     # train vae
@@ -104,7 +107,7 @@ def train(args):
                               batch_size=args.batch_size,
                               epochs=args.epochs,
                               validation_data=(x_validation, y_validation),
-                              callbacks=[early_stop, checkpoint],
+                              callbacks=[early_stop, checkpoint, history],
                               shuffle=True,
                               verbose=2)
 
@@ -112,7 +115,7 @@ def train(args):
 def train_generator(args, charset=SMI):
     import keras
     from darkchem.network import VAE
-    from darkchem.callbacks import MultiModelCheckpoint
+    from darkchem.callbacks import MultiModelCheckpoint, LossHistory
 
     # test/train split
     files = pd.read_csv(os.path.join(args.data, 'index.tsv'), sep='\t', header=None)
@@ -209,12 +212,15 @@ def train_generator(args, charset=SMI):
     # early stopping
     early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=args.patience, mode='min')
 
+    # history
+    history = LossHistory(os.path.join(args.output, 'loss_history.tsv'))
+
     # train
     model.autoencoder.fit_generator(generator=training_generator,
                                     steps_per_epoch=train_examples // args.batch_size,
                                     validation_data=validation_generator,
                                     validation_steps=validation_examples // args.batch_size,
                                     epochs=args.epochs,
-                                    callbacks=[early_stop, checkpoint],
+                                    callbacks=[early_stop, checkpoint, history],
                                     shuffle=True,
                                     verbose=2)
