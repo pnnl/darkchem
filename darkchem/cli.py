@@ -30,7 +30,7 @@ def main():
                                             help='configure (multitask) vae for structure/property prediction')
     p['train'].add_argument('data', type=str, help='path to input data containing vectorized smiles (str)')
     p['train'].add_argument('output', type=str, help='path to output folder (str).')
-    p['train'].add_argument('-y', '--labels', type=str, default='-1', help='path to input labels (str, optional)')
+    p['train'].add_argument('-y', '--labels', type=str, help='path to input labels (str, optional)')
 
     network = p['train'].add_argument_group('network configuration')
     network.add_argument('-k', '--kernels', nargs='+', type=int, default=[9, 9, 10], help='kernel size per convolution (int, default=9 9 10)')
@@ -41,7 +41,7 @@ def main():
     network.add_argument('-d', '--dropout', type=float, default=0.2, help='dropout fraction on property prediciton (float, default=0.2)')
 
     training = p['train'].add_argument_group('training configuration')
-    training.add_argument('-w', '--weights', type=str, default='-1', help='path to directory containing pretrained weights (str, optional).')
+    training.add_argument('-w', '--weights', type=str, help='path to directory containing pretrained weights (str, optional).')
     training.add_argument('-z', '--freeze-vae', action='store_true', help='freeze autoencoder weights (optional)')
     training.add_argument('-v', '--validation', type=float, default=0.1, help='fraction to withold for validation (float, default=0.1)')
     training.add_argument('-b', '--batch-size', type=int, default=128, help='training batch size (int, default=128)')
@@ -64,10 +64,9 @@ def main():
                                            help='evaluation module')
     p['eval'].add_argument('data', type=str, help='path to input data containing vectorized smiles (str)')
     p['eval'].add_argument('network', type=str, help='path to saved network weights (str)')
-    p['eval'].add_argument('-y', '--labels', type=str, default='-1', help='path to input labels (str, optional)')
-    p['eval'].add_argument('-v', '--validation', type=float, default=-1, help='fraction witheld during training (float, optional)')
+    p['eval'].add_argument('-y', '--labels', type=str, help='path to input labels (str, optional)')
+    p['eval'].add_argument('-v', '--validation', type=float, help='fraction witheld during training (float, optional)')
     p['eval'].add_argument('-s', '--seed', type=int, default=777, help='random seed used during training (int, default=777).')
-
 
     args = p['global'].parse_args()
 
@@ -131,12 +130,6 @@ def main():
             print('predicting latent representation...')
             latent = darkchem.predict.latent(smiles, args.network)
             np.save('%s_latent.npy' % name, latent)
-
-    elif args.which == 'evaluate':
-        if args.validation == -1:
-            args.validation = None
-        if args.labels == '-1':
-            args.labels = None
 
         darkchem.utils.evaluate(args.data, args.network,
                                 labels=args.labels, validation=args.validation, seed=args.seed)

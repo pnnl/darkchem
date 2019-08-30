@@ -25,15 +25,15 @@ def load_config(filepath):
     with open(filepath) as f:
         for line in f:
             (key, val) = [x.strip() for x in line.split(':')]
-            if key in ['nchars', 'max_length', 'embedding_dim', 'nlabels',
-                       'latent_dim', 'batch_size', 'epochs', 'patience', 'seed']:
+            if key == '-1':
+                config[key] = None
+            elif key in ['nchars', 'max_length', 'embedding_dim', 'nlabels',
+                         'latent_dim', 'batch_size', 'epochs', 'patience', 'seed']:
                 config[key] = int(val)
-            elif key in ['kernels', 'filters']:
+            elif key in ['kernels', 'filters', 'freeze_vae']:
                 config[key] = ast.literal_eval(val)
             elif key in ['epsilon', 'dropout', 'validation']:
                 config[key] = float(val)
-            elif key in ['freeze_vae']:
-                config[key] = str(val)
             elif key in ['data', 'output', 'weights', 'labels']:
                 config[key] = val
 
@@ -46,7 +46,7 @@ def model_from_config(config):
     # initialize autoencoder
     from darkchem.network import VAE
     model = VAE()
-    if config['labels'] != '-1':
+    if config['labels'] is not None:
         model.create_multitask(**config)
     else:
         model.create(**config)
@@ -54,7 +54,7 @@ def model_from_config(config):
     # load weights
     model.encoder.load_weights(os.path.join(config['output'], 'encoder.h5'))
     model.decoder.load_weights(os.path.join(config['output'], 'decoder.h5'))
-    if config['labels'] != '-1':
+    if config['labels'] is not None:
         model.predictor.load_weights(os.path.join(config['output'], 'predictor.h5'))
 
     return model
@@ -63,7 +63,7 @@ def model_from_config(config):
 def data_from_config(config):
     x = np.load(config['data'])
 
-    if config['labels'] != '-1':
+    if config['labels'] is not None:
         y = np.load(config['labels'])
         return x, y
     else:
@@ -199,7 +199,10 @@ def savedict(d, path, verbose=True):
         print('Arguments:')
     with open(os.path.join(path, 'arguments.txt'), 'w') as f:
         for k, v in d.items():
-            f.write("%s: %s\n" % (k, v))
+            if v is None:
+                f.write("%s: %s\n" % (k, '-1'))
+            else:
+                f.write("%s: %s\n" % (k, v))
             if verbose:
                 print("\t%s: %s" % (k, v))
 
@@ -307,7 +310,7 @@ def downselect(data, p=0.95):
     return idx[:int(p * idx.shape[0])]
 
 
-def evaluate(data, network, labels='-1', validation=-1, seed=777):
+def evaluate(data, network, labels=None, validation=None, seed=777):
     result = {}
     model = load_model(network)
 
@@ -342,7 +345,7 @@ def evaluate(data, network, labels='-1', validation=-1, seed=777):
         y = np.load(labels)
 
         # validation subset
-        if validation != -1:
+        if validation is not None:
             y = y[~mask]
 
         # predict

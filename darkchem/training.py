@@ -20,7 +20,7 @@ def train(args):
     x_validation = x[~mask]
 
     # optionally load labels
-    if args.labels != '-1':
+    if args.labels is not None:
         labels = np.load(args.labels)
         labels_train = labels[mask]
         labels_validation = labels[~mask]
@@ -41,7 +41,7 @@ def train(args):
     model = VAE()
 
     # multitask
-    if args.labels != '-1':
+    if args.labels is not None:
         model.create_multitask(nchars=d, max_length=m, kernels=args.kernels, filters=args.filters,
                                embedding_dim=args.embedding_dim, latent_dim=args.latent_dim, epsilon_std=args.epsilon,
                                nlabels=labels.shape[-1], dropout=args.dropout, freeze_vae=args.freeze_vae)
@@ -77,13 +77,13 @@ def train(args):
     print(model.autoencoder.summary())
 
     # optionally load weights
-    if args.weights != '-1':
+    if args.weights is not None:
         model.encoder.load_weights(os.path.join(args.weights, 'encoder.h5'))
         model.encoder_variational.load_weights(os.path.join(args.weights, 'encoder+v.h5'))
         model.decoder.load_weights(os.path.join(args.weights, 'decoder.h5'))
 
         # try to load predictor weights
-        if (args.labels != '-1') and (os.path.exists(os.path.join(args.weights, 'predictor.h5'))):
+        if (args.labels is not None) and (os.path.exists(os.path.join(args.weights, 'predictor.h5'))):
             model.predictor.load_weights(os.path.join(args.weights, 'predictor.h5'))
 
     # early stopping
@@ -93,7 +93,7 @@ def train(args):
     history = LossHistory(os.path.join(args.output, 'loss_history.tsv'))
 
     # train multitask
-    if args.labels != '-1':
+    if args.labels is not None:
         model.autoencoder.fit(x_train, [y_train, labels_train],
                               batch_size=args.batch_size,
                               epochs=args.epochs,
@@ -141,7 +141,7 @@ def train_generator(args, charset=SMI):
     partition = {'train': [os.path.join(args.data, x) for x in files.iloc[idx[nvalidation:], 0]],
                  'validation': [os.path.join(args.data, x) for x in files.iloc[idx[:nvalidation], 0]]}
 
-    if args.labels != '-1':
+    if args.labels is not None:
         # load first partition for metadata
         y = np.load(os.path.join(args.data, files.iloc[0, 1]))
         nlabels = y.shape[-1]
@@ -164,7 +164,7 @@ def train_generator(args, charset=SMI):
     model = VAE()
 
     # multitask
-    if args.labels != '-1':
+    if args.labels is not None:
         model.create_multitask(nchars=len(charset), max_length=m, kernels=args.kernels, filters=args.filters,
                                embedding_dim=args.embedding_dim, latent_dim=args.latent_dim, epsilon_std=args.epsilon,
                                nlabels=nlabels, dropout=args.dropout, freeze_vae=args.freeze_vae)
@@ -200,13 +200,13 @@ def train_generator(args, charset=SMI):
     print(model.autoencoder.summary())
 
     # optionally load weights
-    if args.weights != '-1':
+    if args.weights is not None:
         model.encoder.load_weights(os.path.join(args.weights, 'encoder.h5'))
         model.encoder_variational.load_weights(os.path.join(args.weights, 'encoder+v.h5'))
         model.decoder.load_weights(os.path.join(args.weights, 'decoder.h5'))
 
         # try to load predictor weights
-        if (args.labels != '-1') and (os.path.exists(os.path.join(args.weights, 'predictor.h5'))):
+        if (args.labels is not None) and (os.path.exists(os.path.join(args.weights, 'predictor.h5'))):
             model.predictor.load_weights(os.path.join(args.weights, 'predictor.h5'))
 
     # early stopping
