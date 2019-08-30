@@ -131,6 +131,7 @@ def main():
             latent = darkchem.predict.latent(smiles, args.network)
             np.save('%s_latent.npy' % name, latent)
 
+    elif args.which == 'evaluate':
         darkchem.utils.evaluate(args.data, args.network,
                                 labels=args.labels, validation=args.validation, seed=args.seed)
 
