@@ -25,7 +25,7 @@ def load_config(filepath):
     with open(filepath) as f:
         for line in f:
             (key, val) = [x.strip() for x in line.split(':')]
-            if key == '-1':
+            if val == '-1':
                 config[key] = None
             elif key in ['nchars', 'max_length', 'embedding_dim', 'nlabels',
                          'latent_dim', 'batch_size', 'epochs', 'patience', 'seed']:
