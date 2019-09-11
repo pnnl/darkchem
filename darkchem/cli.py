@@ -106,7 +106,7 @@ def main():
         # convert inchi to canonical smiles
         elif 'InChI' in df.columns and 'SMILES' not in df.columns:
             print('converting inchi to smiles...')
-            df['SMILES'] = darkchem.utils.inchi2smi(df['InChI'].values)
+            df['SMILES'] = darkchem.preprocess.inchi2smi(df['InChI'].values)
             smiles = df['SMILES'].values
         # canonicalize existing smiles
         elif 'SMILES' in df.columns:
