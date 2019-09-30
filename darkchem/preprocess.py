@@ -109,7 +109,11 @@ def process(df, name, output, canonical=False, shuffle=True):
     # vectorize
     # TODO: configurable max length
     # TODO: configurable charsest
-    df['vec'] = vectorize(df['SMILES'].values)
+    vectors = np.vstack(darkchem.preprocess.vectorize(df['SMILES'].values))
+    vectors = np.where(np.all(vectors == 0, axis=1, keepdims=True), np.nan, vectors)
+
+    df['vec'] = vectors.tolist()
+
     df.dropna(how='any', axis=0, inplace=True)
     arr = np.vstack(df['vec'].values)
 
