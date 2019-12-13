@@ -53,7 +53,7 @@ def main():
     p['predict'] = p['subparsers'].add_parser('predict',
                                               description='DarkChem property prediction module',
                                               help='prediction module')
-    p['predict'].add_argument('mode', choices=['latent', 'prop'], help='prediction mode (str)')
+    p['predict'].add_argument('mode', choices=['latent', 'prop', 'softmax'], help='prediction mode (str)')
     p['predict'].add_argument('data', type=str, help='path to .tsv containing inchi/smiles for property prediction (str)')
     p['predict'].add_argument('network', type=str, help='path to saved network weights (str)')
     p['predict'].add_argument('-c', '--canonical', action='store_true', help='indicate smiles column already canonicalized with openbabel')
@@ -130,6 +130,15 @@ def main():
             print('predicting latent representation...')
             latent = darkchem.predict.latent(smiles, args.network)
             np.save('%s_latent.npy' % name, latent)
+
+        # latent prediction
+        elif args.mode == 'softmax':
+            print('predicting softmax outputs...')
+            softmax, smiles_out = darkchem.predict.softmax(smiles, args.network)
+            smiles_out = pd.DataFrame({'SMILES': smiles_out})
+
+            smiles_out.to_csv('%s_smiles.tsv' % name, sep='\t', index=False)
+            np.save('%s_softmax.npy' % name, softmax)
 
     elif args.which == 'evaluate':
         darkchem.utils.evaluate(args.data, args.network,
