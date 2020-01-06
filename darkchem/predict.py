@@ -61,8 +61,8 @@ def softmax(smiles, network):
     smiles_out = np.array([darkchem.utils.vec2struct(x) for x in np.argmax(softmax, axis=-1)])
 
     # overwrite invalids
-    idx = np.where(np.all(vectors == 0, axis=1)
-    smiles_out = , np.nan, smiles_out)
-    softmax = np.where(np.all(vectors == 0, axis=1, keepdims=True), np.nan, softmax)
+    idx = np.where(np.all(vectors == 0, axis=1))[0]
+    smiles_out[idx] = np.nan
+    softmax[idx, :, :] = np.nan
 
     return softmax, smiles_out
