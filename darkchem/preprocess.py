@@ -25,8 +25,8 @@ def _canonicalize(smi):
 
     res = [x.strip() for x in res.split('\n') if x is not '']
 
-    if 'molecule converted' in res[-1]:
-        return res[-2]
+    if 'molecule converted' in res[-2]:
+        return res[-1]
 
     return None
 
