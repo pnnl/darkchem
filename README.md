@@ -13,7 +13,7 @@ Installation
 ------------
 Use [``conda``](https://www.anaconda.com/download/) to create a new virtual environment with required dependencies:
 ```bash
-conda create -n darkchem -c conda-forge -c rdkit -c openbabel keras tensorflow rdkit openbabel numpy scipy scikit-learn matplotlib seaborn pandas python=3
+conda create -n darkchem -c conda-forge -c rdkit -c openbabel python=3.7 keras tensorflow rdkit openbabel numpy scipy scikit-learn pandas
 ```
 
 Activate the virtual environment:
