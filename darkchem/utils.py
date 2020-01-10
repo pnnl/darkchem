@@ -329,7 +329,8 @@ def evaluate(data, network, labels=None, validation=None, seed=777):
 
     # one hot
     n, m = x.shape
-    d = max(np.unique(x)) + 1
+    d = max(np.unique(x)).astype(int) + 1
+
     one_hot = keras.utils.to_categorical(x, d).reshape((-1, m, d))
 
     # predict
