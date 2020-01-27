@@ -17,18 +17,13 @@ def _canonicalize(smi):
     '''Canonicalizes SMILES string.'''
 
     try:
-        res = subprocess.check_output('echo "%s" | obabel -ismi -ocan' % smi,
-                                      stderr=subprocess.STDOUT, shell=True).decode('ascii')
+        res = subprocess.check_output('obabel -ismi -:"%s" -ocan' % smi,
+                                      stderr=subprocess.DEVNULL, shell=True).decode('ascii')
     except:
         print(smi, 'failed.')
         return None
 
-    res = [x.strip() for x in res.split('\n') if x is not '']
-
-    if 'molecule converted' in res[-2]:
-        return res[-1]
-
-    return None
+    return res.strip()
 
 
 def canonicalize(smiles, processes=mp.cpu_count()):
@@ -40,18 +35,13 @@ def _inchi2smi(inchi):
     '''Converts InChI string to SMILES string.'''
 
     try:
-        res = subprocess.check_output('echo "%s" | obabel -iinchi -ocan' % inchi,
-                                      stderr=subprocess.STDOUT, shell=True).decode('ascii')
+        res = subprocess.check_output('obabel -iinchi -:"%s" -ocan' % inchi,
+                                      stderr=subprocess.DEVNULL, shell=True).decode('ascii')
     except:
         print(inchi, 'failed.')
         return None
 
-    res = [x.strip() for x in res.split('\n') if x is not '']
-
-    if 'molecule converted' in res[-1]:
-        return res[-2]
-
-    return None
+    return res.strip()
 
 
 def inchi2smi(inchis, processes=mp.cpu_count()):
