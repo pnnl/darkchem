@@ -86,7 +86,7 @@ def _encode(string, charset):
     If s is empty, returns an empty array
     '''
 
-    if string is None or string is np.nan:
+    if pd.isna(string):
         return np.array([])
 
     vec = np.zeros(len(string))
