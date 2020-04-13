@@ -3,9 +3,9 @@ import multiprocessing as mp
 import re
 import glob
 import pandas as pd
-import subprocess
 import os
 import numpy as np
+from openbabel import pybel
 
 
 def vectorize(smiles, processes=mp.cpu_count()):
@@ -15,15 +15,7 @@ def vectorize(smiles, processes=mp.cpu_count()):
 
 def _canonicalize(smi):
     '''Canonicalizes SMILES string.'''
-
-    try:
-        res = subprocess.check_output('obabel -ismi -:"%s" -ocan' % smi,
-                                      stderr=subprocess.DEVNULL, shell=True).decode('ascii')
-    except:
-        print(smi, 'failed.')
-        return None
-
-    return res.strip()
+    return pybel.readstring('smi', smi).write('can').strip()
 
 
 def canonicalize(smiles, processes=mp.cpu_count()):
@@ -34,14 +26,7 @@ def canonicalize(smiles, processes=mp.cpu_count()):
 def _inchi2smi(inchi):
     '''Converts InChI string to SMILES string.'''
 
-    try:
-        res = subprocess.check_output('obabel -iinchi -:"%s" -ocan' % inchi,
-                                      stderr=subprocess.DEVNULL, shell=True).decode('ascii')
-    except:
-        print(inchi, 'failed.')
-        return None
-
-    return res.strip()
+    return pybel.readstring('inchi', inchi).write('can').strip()
 
 
 def inchi2smi(inchis, processes=mp.cpu_count()):
