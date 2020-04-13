@@ -6,6 +6,7 @@ import multiprocessing as mp
 from functools import partial
 from os.path import *
 import keras
+import pandas as pd
 
 # Globals
 SMI = ['PAD',
