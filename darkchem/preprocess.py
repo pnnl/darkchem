@@ -9,8 +9,8 @@ from openbabel import pybel
 
 
 def vectorize(smiles, processes=mp.cpu_count()):
-    p = mp.Pool(processes=processes)
-    return p.map(darkchem.utils.struct2vec, smiles)
+    with mp.Pool(processes=processes) as p:
+        return p.map(darkchem.utils.struct2vec, smiles)
 
 
 def _canonicalize(smi):
@@ -19,8 +19,8 @@ def _canonicalize(smi):
 
 
 def canonicalize(smiles, processes=mp.cpu_count()):
-    p = mp.Pool(processes=processes)
-    return p.map(_canonicalize, smiles)
+    with mp.Pool(processes=processes) as p:
+        return p.map(_canonicalize, smiles)
 
 
 def _inchi2smi(inchi):
@@ -30,8 +30,8 @@ def _inchi2smi(inchi):
 
 
 def inchi2smi(inchis, processes=mp.cpu_count()):
-    p = mp.Pool(processes=processes)
-    return p.map(_inchi2smi, inchis)
+    with mp.Pool(processes=processes) as p:
+        return p.map(_inchi2smi, inchis)
 
 
 def _parse_formula(formula, targets='CHNOPS'):
@@ -51,8 +51,8 @@ def _parse_formula(formula, targets='CHNOPS'):
 
 
 def parse_formulas(formulas, processes=mp.cpu_count()):
-    p = mp.Pool(processes=processes)
-    return pd.DataFrame(data=p.map(_parse_formula, formulas))
+    with mp.Pool(processes=processes) as p:
+        return pd.DataFrame(data=p.map(_parse_formula, formulas))
 
 
 def process(df, name, output, canonical=False, shuffle=True):
