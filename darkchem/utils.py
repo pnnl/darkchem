@@ -54,8 +54,9 @@ def model_from_config(config):
 
     # load weights
     model.encoder.load_weights(os.path.join(config['output'], 'encoder.h5'))
-    model.decoder.load_weights(os.path.join(config['output'], 'decoder.h5'))
-    if config['labels'] is not None:
+    if os.path.exists(os.path.join(config['output'], 'decoder.h5')):
+        model.decoder.load_weights(os.path.join(config['output'], 'decoder.h5'))
+    if os.path.exists(os.path.join(config['output'], 'predictor.h5')):
         model.predictor.load_weights(os.path.join(config['output'], 'predictor.h5'))
 
     return model
