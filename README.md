@@ -12,8 +12,8 @@ DarkChem employs a variational autoencoder (VAE) to learn a continuous numerical
 Installation
 ------------
 Use [``conda``](https://www.anaconda.com/download/) to create a new virtual environment with required dependencies:
-```bash
-conda create -n darkchem -c conda-forge -c rdkit -c openbabel keras tensorflow rdkit openbabel numpy scipy scikit-learn matplotlib seaborn pandas python=3
+```
+conda create -n darkchem -c conda-forge -c rdkit -c openbabel python=3.7 keras tensorflow rdkit openbabel numpy scipy scikit-learn pandas
 ```
 
 Activate the virtual environment:
@@ -22,7 +22,7 @@ conda activate darkchem
 ```
 
 Install DarkChem using [``pip``](https://pypi.org/project/pip/):
-```bash
+```
 # clone/install
 git clone https://github.com/pnnl/darkchem.git
 pip install darkchem/
@@ -39,23 +39,29 @@ More advanced functionality requires the use of DarkChem as an API. For example,
 
 ```python
 import numpy as np
-import darkchem            
- 
+import darkchem
+
 # load model
-model = darkchem.utils.load_model(‘/path/to/model_folder/’) # arguments.txt must be present in this folder, as well as respective network weights
- 
+model = darkchem.utils.load_model('/path/to/model_folder/')  # arguments.txt must be present in this folder, as well as respective network weights
+
 # load data
-x = np.load(‘/path/to/smiles.npy’)
- 
+x = np.load('/path/to/smiles.npy')
+
 # generate latent space
 x_latent = model.encoder.predict(x)
- 
+
 # generate property predictions
 y_pred = model.predictor.predict(x_latent)
- 
+
 # predict SMILES outputs
 x_pred = model.decoder.predict(x_latent)
 ```
+
+Citing DarkChem
+---------------
+If you would like to reference DarkChem in an academic paper, we ask you include the following:
+* Colby, S.M., Nuñez, J.R., Hodas, N.O., Corley, C.D. and Renslow, R.R., 2019. Deep learning to generate in silico chemical property libraries and candidate molecules for small molecule identification in complex samples. _Analytical Chemistry_, 92(2), pp.1720-1729.
+* DarkChem, version 0.1.0 http://github.com/pnnl/darkchem (accessed MMM YYYY)
 
 Disclaimer
 ----------
