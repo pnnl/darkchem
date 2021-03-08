@@ -47,7 +47,7 @@ def model_from_config(config):
     # initialize autoencoder
     from darkchem.network import VAE
     model = VAE()
-    if 'nlabels' is in config.keys():
+    if 'nlabels' in config.keys():
         model.create_multitask(**config)
     else:
         model.create(**config)
