@@ -1,0 +1,15 @@
+name: darkchem
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - keras =2.13
+  - numpy
+  - openbabel
+  - pandas
+  - python =3.8
+  - rdkit
+  - scikit-learn
+  - scipy
+  - tensorflow =2.13

@@ -1,7 +1,7 @@
 from keras.layers import Input, Conv1D, Embedding, Flatten, Dense, Reshape, Lambda, Activation, Dropout
 from keras.models import Model
-from keras import objectives, backend as K
-from keras.optimizers import Adam
+from keras import losses, backend as K
+from keras.optimizers.legacy import Adam
 
 
 class VAE(object):
@@ -51,7 +51,7 @@ class VAE(object):
                                  name='vae')
 
         # optimizer
-        opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=1E-8, amsgrad=True)
+        opt = Adam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=1E-8, amsgrad=True)
 
         # optionally freeze weights
         if self.freeze_vae is True:
@@ -63,7 +63,7 @@ class VAE(object):
         # compile autoencoder
         self.autoencoder.compile(optimizer=opt,
                                  loss=vae_loss,
-                                 metrics=['accuracy', objectives.categorical_crossentropy])
+                                 metrics=['accuracy', losses.categorical_crossentropy])
 
     def create_multitask(self, nchars, max_length, kernels, filters,
                          embedding_dim, latent_dim, epsilon_std, nlabels, dropout, freeze_vae, **kwargs):
@@ -119,7 +119,7 @@ class VAE(object):
                                  name='vae')
 
         # optimizer
-        opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=1E-8, amsgrad=True)
+        opt = Adam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=1E-8, amsgrad=True)
 
         # optionally freeze weights
         if self.freeze_vae is True:
@@ -131,12 +131,12 @@ class VAE(object):
         # compile autoencoder
         self.autoencoder.compile(optimizer=opt,
                                  loss=[vae_loss, 'mape'],
-                                 metrics=['accuracy', objectives.categorical_crossentropy],
+                                 metrics=['accuracy', losses.categorical_crossentropy],
                                  loss_weights=[1.0, 1.0])
 
     def _get_learning_rate(self):
         opt = self.autoencoder.optimizer
-        lr0 = opt.lr
+        lr0 = opt.learning_rate
         if opt.initial_decay > 0:
             lr = lr0 * (1. / (1. + opt.decay * K.cast(opt.iterations,
                                                       K.dtype(opt.decay))))
@@ -165,7 +165,7 @@ class VAE(object):
 
         # custom loss term
         def vae_loss(y_true, y_pred):
-            xent_loss = K.mean(objectives.categorical_crossentropy(y_true, y_pred), axis=-1)
+            xent_loss = K.mean(losses.categorical_crossentropy(y_true, y_pred), axis=-1)
             kl_loss = K.mean(-z_log_var + 0.5 * K.square(z_mean) + K.exp(z_log_var) - 1, axis=-1)
 
             # # explicit kl

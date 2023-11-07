@@ -11,24 +11,36 @@ DarkChem employs a variational autoencoder (VAE) to learn a continuous numerical
 
 Installation
 ------------
-Use [``conda``](https://www.anaconda.com/download/) to create a new virtual environment with required dependencies:
+Clone the repository:
+```bash
+git clone https://github.com/pnnl/darkchem.git
+cd darkchem
 ```
-conda create -n darkchem -c conda-forge -c rdkit -c openbabel python=3.7 keras tensorflow rdkit openbabel numpy scipy scikit-learn pandas
+
+Use [``conda``](https://www.anaconda.com/download/) or [``mamba``](https://mamba.readthedocs.io/en/latest/installation.html) to create a new virtual environment with required dependencies using the provided environment file. Mamba is preferred due to its performance advantages over conda.
+```bash
+conda create --file environment.yml
+# or
+mamba create --file environment.yml
+```
+
+Alternatively, supply dependencies to conda/mamba directly:
+```bash
+conda create -n darkchem -c conda-forge python=3.8 keras=2.13 tensorflow=2.13 rdkit openbabel numpy scipy scikit-learn pandas
+# or
+mamba create -n darkchem -c conda-forge python=3.8 keras=2.13 tensorflow=2.13 rdkit openbabel numpy scipy scikit-learn pandas
 ```
 
 Activate the virtual environment:
-```
+```bash
 conda activate darkchem
+# or
+mamba activate darkchem
 ```
 
-Install DarkChem using [``pip``](https://pypi.org/project/pip/):
-```
-# clone/install
-git clone https://github.com/pnnl/darkchem.git
-pip install darkchem/
-
-# direct
-pip install git+https://github.com/pnnl/darkchem
+Ensure you are in the repository folder and install using [``pip``](https://pypi.org/project/pip/):
+```bash
+pip install -e .
 ```
 
 Getting Started
